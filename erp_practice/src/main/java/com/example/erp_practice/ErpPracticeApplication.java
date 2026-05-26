@@ -1,0 +1,13 @@
+package com.example.erp_practice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ErpPracticeApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ErpPracticeApplication.class, args);
+	}
+
+}

@@ -1,10 +1,10 @@
-package com.example.erp._core.errors;
+package com.example.erp.common.errors;
 
 
-import com.example.erp._core.errors.exceptions.Exception400;
-import com.example.erp._core.errors.exceptions.Exception401;
-import com.example.erp._core.errors.exceptions.Exception403;
-import com.example.erp._core.errors.exceptions.Exception404;
+import com.example.erp.common.errors.exceptions.Exception400;
+import com.example.erp.common.errors.exceptions.Exception401;
+import com.example.erp.common.errors.exceptions.Exception403;
+import com.example.erp.common.errors.exceptions.Exception404;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;

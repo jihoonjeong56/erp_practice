@@ -1,4 +1,4 @@
-package com.example.erp._core.errors.exceptions;
+package com.example.erp.common.errors.exceptions;
 
 /**
  * 500 Internal Server Error

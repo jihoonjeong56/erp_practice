@@ -35,3 +35,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### env ###
+.env
+
+### secret properties ###
+application-secret.yaml
+**/application-secret.yaml

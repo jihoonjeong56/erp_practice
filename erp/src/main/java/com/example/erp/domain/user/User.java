@@ -5,6 +5,7 @@ import com.example.erp.domain.user.enums.Role;
 import com.example.erp.domain.user.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -43,6 +44,7 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private UserStatus status;
 
+    @Builder
     public User(String username, String password, String name, String email, String provider, String providerId, Role role, UserStatus status) {
         this.username = username;
         this.password = password;

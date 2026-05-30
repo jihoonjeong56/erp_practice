@@ -2,11 +2,10 @@ spring:
   application:
     name: erp
   profiles:
-    active: local
+    active:
+      - local
+      - secret
 
 #    active: dev
 
-jwt:
-  secret: erp-secret-key-must-be-at-least-32-characters-long
-  expiration: 86400000  # 24시간 (ms)
 

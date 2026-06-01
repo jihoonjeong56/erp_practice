@@ -12,7 +12,7 @@ front-end
 
 - vite React
 - npm create vite@latest (폴더명) -- --template react-ts
-사용 라이브러리
+- 사용 라이브러리
   - npm install axios (HTTP 통신)
   - npm install react-router-dom (라우팅)
   - npm install -D @types/react-router-dom (타입정의)

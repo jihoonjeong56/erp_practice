@@ -24,3 +24,7 @@ front-end
   - 회원가입 : http://localhost:8080/api/auth/signup
   - 로그인 : http://localhost:8080/api/auth/login
   - 내정보조회(accessToken) : http://localhost:8080/api/auth/me
+  - 권한(Role) 구분
+
+- department(부서)
+  .selfJoin 사용

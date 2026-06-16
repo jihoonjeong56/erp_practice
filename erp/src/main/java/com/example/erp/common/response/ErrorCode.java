@@ -17,7 +17,12 @@ public enum ErrorCode {
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "U001", "이미 사용 중인 아이디입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U002", "사용자를 찾을 수 없습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "U003", "비밀번호가 일치하지 않습니다."),
-    DUPLICATE_EMAIL(HttpStatus.CONFLICT ,"U004" ,"이미 사용중인 이메일 입니다." );
+    DUPLICATE_EMAIL(HttpStatus.CONFLICT ,"U004" ,"이미 사용중인 이메일 입니다." ),
+
+    /*부서*/
+    DEPARTMENT_NOT_FOUNT(HttpStatus.NOT_FOUND, "D001","부서를 찾을수 없습니다." ),
+    DUPLICATE_DEPT_CODE(HttpStatus.CONFLICT, "D002","이미 사용중인 부서 코드입니다."),
+    CANNOT_DELETE_DEPARTMENT(HttpStatus.BAD_REQUEST, "D003","하위부서가 있어 삭제할 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

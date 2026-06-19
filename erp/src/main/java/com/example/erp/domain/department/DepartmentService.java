@@ -3,10 +3,13 @@ package com.example.erp.domain.department;
 import com.example.erp.common.exception.BusinessException;
 import com.example.erp.common.response.ErrorCode;
 import com.example.erp.domain.department.dto.DepartmentCreateRequest;
+import com.example.erp.domain.department.dto.DepartmentResponse;
 import com.example.erp.domain.department.dto.DepartmentUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -66,4 +69,25 @@ public class DepartmentService  {
         }
         departmentRepository.delete(department);
     }
+
+    public DepartmentResponse getDepartment(Long id){
+        Department department = departmentRepository.findById(id)
+                .orElseThrow(()-> new BusinessException(ErrorCode.DEPARTMENT_NOT_FOUNT));
+        return new DepartmentResponse(department);
+    }
+
+    public List<DepartmentResponse> getAllDepartments(){
+        return departmentRepository.findByUseYnOrderBySortOrderAsc("Y")
+                .stream()
+                .map(DepartmentResponse::new)
+                .toList();
+    }
+
+    public List<DepartmentResponse> getDepartmentTree(){
+        return departmentRepository.findByParentIsNullOrderBySortOrderAsc()
+                .stream()
+                .map(DepartmentResponse::new)
+                .toList();
+    }
+
 }

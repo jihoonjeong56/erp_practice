@@ -27,4 +27,5 @@ front-end
   - 권한(Role) 구분
 
 - department(부서)
-  .selfJoin 사용
+  - department 조회 -> Repository Query 및 springboot Method naming 활용하여 Service 단순화
+    .selfJoin 사용

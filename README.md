@@ -22,10 +22,51 @@ front-end
 - user
   api테스트 경로
   - 회원가입 : http://localhost:8080/api/auth/signup
+
+  ```
+  {
+    "username": "admin01",
+    "password": "password123",
+    "name": "홍길동",
+    "email": "hong@example.com"
+  }
+  ```
+
   - 로그인 : http://localhost:8080/api/auth/login
-  - 내정보조회(accessToken) : http://localhost:8080/api/auth/me
+
+  ```
+  {
+    "username": "admin01",
+    "password": "password123"
+  }
+  ```
+
+  - 내정보조회(GET-accessToken) : http://localhost:8080/api/auth/me
   - 권한(Role) 구분
 
 - department(부서)
   - department 조회 -> Repository Query 및 springboot Method naming 활용하여 Service 단순화
     .selfJoin 사용
+    api테스트 경로
+  - 최상위부서 등록(POST) : http://localhost:8080/api/departments
+  ```
+  {
+    "deptCode": "HQ",
+    "deptName": "본사",
+    "sortOrder": 1
+  }
+  ```
+
+  - 하위 부서 등록-parentId 사용(POST) : http://localhost:8080/api/departments
+  ```
+  {
+    "deptCode": "HQ",
+    "deptName": "본사",
+    "sortOrder": 1,
+    "parentId": 1
+  }
+  ```
+
+  - 트리구조 조회(GET-accessToken) : http://localhost:8080/api/departments/tree
+  - 전체목록 조회(GET-accessToken) : http://localhost:8080/api/departments
+  - 부서 단건 조회(GET-accessToken) : http://localhost:8080/api/departments/{id}

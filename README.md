@@ -49,6 +49,7 @@ front-end
     .selfJoin 사용
     api테스트 경로
   - 최상위부서 등록(POST) : http://localhost:8080/api/departments
+
   ```
   {
     "deptCode": "HQ",
@@ -58,6 +59,7 @@ front-end
   ```
 
   - 하위 부서 등록-parentId 사용(POST) : http://localhost:8080/api/departments
+
   ```
   {
     "deptCode": "HQ",

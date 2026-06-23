@@ -18,6 +18,7 @@ front-end
   - npm install -D @types/react-router-dom (타입정의)
   - npm install zustand (상태관리 - 토큰저장용)
   - npm install @mui/material @emotion/react @emotion/styled (UI 컴포넌트 - 빠른 UI구성)
+  - npm install -D tailwindcss @tailwindcdd/vite(레이아웃 css 사용 -> 자유로운 커스터마이징과 낮은 학습난의도, 작은 번들 크기)
 
 - user
   api테스트 경로

@@ -1,67 +1,64 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
+import axiosInstance from "../../api/axiosInstance";
+import type { ApiResponse, LoginResponse } from "../../types/auth";
 
-export default function SignUpPage() {
-  const navigate = useNavigate();
-  const [form, setForm] = useState({
-    username: "",
-    password: "",
-    name: "",
-    email: "",
-  });
+export default function LoginPage() {
+  const navigete = useNavigate();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     try {
-      const res = await axiosInstance.post("/api/auth/signup", form);
-      console.log("응답 상태:", res.status); // 추가
-      console.log("응답 데이터:", res.data); // 추가
-      alert("회원가입이 완료되었습니다.");
-      navigate("/login");
+      const res = await axiosInstance.post<ApiResponse<LoginResponse>>(
+        "/api/auth/login",
+        form,
+      );
+      const { accessToken, name, role } = res.data.data;
+      setAuth(accessToken, name, role);
+      navigete("/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.message || "회원가입에 실패했습니다.");
+      setError(err.response?.data?.message || "로그인에 실패했습니다.");
     }
   };
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={styles.title}>회원가입</h2>
+        <h2 style={styles.title}>ERP 로그인</h2>
         <form onSubmit={handleSubmit}>
-          {["username", "password", "name", "email"].map((field) => (
-            <input
-              key={field}
-              style={styles.input}
-              name={field}
-              type={field === "password" ? "password" : "text"}
-              placeholder={
-                {
-                  username: "아이디",
-                  password: "비밀번호",
-                  name: "이름",
-                  email: "이메일",
-                }[field]
-              }
-              onChange={handleChange}
-            />
-          ))}
+          <input
+            style={styles.input}
+            name="username"
+            placeholder="아이디"
+            onChange={handleChange}
+          />
+          <input
+            style={styles.input}
+            name="password"
+            type="password"
+            placeholder="비밀번호"
+            onChange={handleChange}
+          />
           {error && <p style={styles.error}>{error}</p>}
           <button style={styles.button} type="submit">
-            가입하기
+            로그인
           </button>
         </form>
         <p style={styles.link}>
-          이미 계정이 있으신가요? <Link to="/login">로그인</Link>
+          계정이 없으신가요? <Link to="/signup">회원가입</Link>
         </p>
       </div>
     </div>
   );
 }
+
 const styles: Record<string, React.CSSProperties> = {
   container: {
     display: "flex",

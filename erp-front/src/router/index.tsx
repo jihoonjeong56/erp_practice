@@ -20,7 +20,7 @@ export default function index() {
             <Route path="/departments" element={<div>부서 관리(준비중)</div>} />
             <Route path="/employees" element={<div>직원 관리(준비중)</div>} />
             <Route path="/inventory" element={<div>재고 관리(준비중)</div>} />
-            <Route path="/order" element={<div>발주 관리(준비중)</div>} />
+            <Route path="/orders" element={<div>발주 관리(준비중)</div>} />
             <Route path="/production" element={<div>생산 관리(준비중)</div>} />
           </Route>
         </Route>

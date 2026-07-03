@@ -1,4 +1,11 @@
 package com.example.erp.domain.code.repository;
 
-public class CommonCodeRepository {
+import com.example.erp.domain.code.entity.CommonCode;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface CommonCodeRepository extends JpaRepository<CommonCode, Long> {
+    List<CommonCode> findByCodeGroup_GroupCodeAndUseYnOrderBySortOderAsc(String groupCode, String useYn);
+    boolean existsByCodeGroup_GroupCodeAndCode(String groupCode, String code);
 }

@@ -12,6 +12,10 @@ public enum ErrorCode {
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "C001","잘못된 입력값입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "C002", "인증이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "C003", "접근 권한이 없습니다."),
+    CODE_GROUP_NOT_FOUNT(HttpStatus.NOT_FOUND, "CC001", "코드그룹을 사용할 수 없습니다."),
+    DUPLICATE_CODE_CROUP(HttpStatus.CONFLICT, "CC002", "이미 사용중인 코드 그룹입니다"),
+    COMMON_CODE_NOT_FOUNT(HttpStatus.NOT_FOUND, "CC003","공콩 코드를 찾을 수 없습니다."),
+    DUPLICATE_COMMON_CODE(HttpStatus.CONFLICT, "CC004", "이미 사용 중인 코드 입니다."),
 
     /*유저*/
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "U001", "이미 사용 중인 아이디입니다."),

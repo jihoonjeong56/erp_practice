@@ -4,6 +4,7 @@ import com.example.erp.common.response.ApiResponse;
 import com.example.erp.domain.code.dto.CodeGroupCreateRequest;
 import com.example.erp.domain.code.dto.CodeGroupResponse;
 import com.example.erp.domain.code.dto.CommonCodeCreateRequest;
+import com.example.erp.domain.code.dto.CommonCodeResponse;
 import com.example.erp.domain.code.service.CommonCodeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,32 @@ public class CommonCodeController {
             ){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.ok(commonCodeService.createCode(groupCode, request)));
+    }
+
+    @GetMapping("/groups/{groupCode}/codes")
+    public ResponseEntity<ApiResponse<List<CommonCodeResponse>>> getCodeByGroupo(
+            @PathVariable String groupCode
+    ){
+        return ResponseEntity.ok(ApiResponse.ok(commonCodeService.getCodesByGroup(groupCode)));
+    }
+
+    @PutMapping("groups/{groupCode}/codes/{codeId}")
+    public ResponseEntity<ApiResponse<Void>> updateCode(
+            @PathVariable String groupCode,
+            @PathVariable Long codeId,
+            @Valid @RequestBody CommonCodeCreateRequest request
+    ){
+        commonCodeService.updateCode(groupCode, codeId, request);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @DeleteMapping("/groups/{groupCode}/codes/{codeId}")
+    public ResponseEntity<ApiResponse<Void>> deleteCode(
+            @PathVariable String groupCode,
+            @PathVariable Long codeId
+    ){
+        commonCodeService.deleteCode(groupCode, codeId);
+        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
 

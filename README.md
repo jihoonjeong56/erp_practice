@@ -74,3 +74,52 @@ front-end
   - 트리구조 조회(GET-accessToken) : http://localhost:8080/api/departments/tree
   - 전체목록 조회(GET-accessToken) : http://localhost:8080/api/departments
   - 부서 단건 조회(GET-accessToken) : http://localhost:8080/api/departments/{id}
+
+- CommonCode(공통코드)
+  - 코드 그룹 생성(POST) : http://localhost:8080/api/codes/groups
+
+  ```
+  {
+    "groupCode": "EMPLOYEE_STATUS",
+    "groupName": "직원 상태",
+    "description": "직원의 재직 상태 코드"
+  }
+  ```
+
+  - 코드 값 추가(POST) : http://localhost:8080/api/groups/EMPLOYEE_STATUS/codes
+
+  ```
+  {
+    "code": "ACTIVE", "codeName": "재직중", "sortOrder": 1
+  }
+  {
+    "code": "ACTIVE", "codeName": "휴직", "sortOrder": 2
+  }
+  {
+    "code": "ACTIVE", "codeName": "퇴직", "sortOrder": 3
+  }
+  ```
+
+  - 코드 목록 조회(GET) : http://localhost:8080/api/codes/EMPLOYEE_STATUS/codes
+  - 발주 상태 미리 만들기(POST) :
+    http://localhost:8080/api/codes/groups
+
+  ```
+  {
+    "groupCode": "ORDER_STATUS", "groupName": "발주 상태"
+  }
+  ```
+
+  http://localhost:8080/api/codes/groups/ORDER_STATUS/codes
+
+  ```
+  {
+    "code": "DRAFT", "codeName": "임시저장", "sortOrder": 1
+  }
+  {
+    "code": "PENDING", "codeName": "승인대기", "sortOrder": 2
+  }
+  {
+    "code": "APPROVED", "codeName": "승인완료", "sortOrder": 3
+  }
+  ```

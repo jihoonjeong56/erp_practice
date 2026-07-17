@@ -4,6 +4,7 @@ import SignUpPage from "../pages/auth/SignUpPage";
 import PrivateRoute from "./PrivateRoute";
 import Layout from "../components/layout/Layout";
 import DashboardPage from "../pages/dashboard/DashboardPage";
+import DepartmentPage from "../pages/department/DepartmentPage";
 
 export default function index() {
   return (
@@ -17,7 +18,7 @@ export default function index() {
         <Route element={<PrivateRoute />}>
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/departments" element={<div>부서 관리(준비중)</div>} />
+            <Route path="/departments" element={<DepartmentPage />} />
             <Route path="/employees" element={<div>직원 관리(준비중)</div>} />
             <Route path="/inventory" element={<div>재고 관리(준비중)</div>} />
             <Route path="/orders" element={<div>발주 관리(준비중)</div>} />

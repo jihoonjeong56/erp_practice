@@ -173,13 +173,100 @@ export default function DepartmentPage() {
                   <td className="px-4 py-3 text-gray-500">
                     {dept.parentName ?? "-"}
                   </td>
-                  <td>{dept.sortOrder}</td>
+                  <td className="px-4 py-3 text-gray-500">{dept.sortOrder}</td>
+                  <td className="px-4 py-3 text-gray500">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium
+                      ${dept.useYn === "Y" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
+                    >
+                      {dept.useYn === "Y" ? "사용" : "미사용"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => openEdit(dept)}
+                        className="text-xw text-indigo-600 hover:text-indigo-800 font-medium"
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={() => handleDelete(dept.id)}
+                        className="text-xs text-red-500 hover:text-red-700 font-medium"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {/* 등록/수정 모달 */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-x1 shadow-x1 w-full max-w-md p-6">
+            <h2 className="text=lg font-bold text-gray-800 mb-4">
+              {editTarget ? "부서 수정" : "부서 등록"}
+            </h2>
+
+            <div className="space-y-3">
+              {/* 부서 코드 - 등록시 */}
+              {!editTarget && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    부서코드
+                    <span>*</span>
+                  </label>
+                  <input
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus: ring-indigo-500"
+                    placeholder="예: DEV"
+                    value={form.deptCode}
+                    onChange={(e) =>
+                      setForm({ ...form, deptCode: e.target.value })
+                    }
+                  />
+                </div>
+              )}
+
+              {/* 부서명 */}
+              <div>
+                <label className="block text-sm font-medium text-gray mb-1">
+                  부서명<span>*</span>
+                </label>
+                <input
+                  className=" w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="부서명 입력"
+                  value={form.deptName}
+                  onChange={(e) =>
+                    setForm({ ...form, deptName: e.target.value })
+                  }
+                />
+              </div>
+              {/* 상위 부서 */}
+              <div>
+                <label className="block text-sm font-medium text-gray mb-1">
+                  상위부서
+                </label>
+                <select
+                  className=" w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  value={form.parentId ?? ""}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      parentId: e.target.value ? Number(e.target.value) : null,
+                    })
+                  }
+                />
+                <option value="">최상위 부서</option>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -10,7 +10,7 @@ INSERT INTO users (username, password, name, email, role, status, created_at, up
 VALUES
     -- 관리자
     ('admin',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+     '$2b$10$89KmBhYrOqDKWpzRKkzS4Oq03JInoJKP4LcedYZzWA4Uc.x//Gm7m',
      '관리자',
      'admin@erp.com',
      'ADMIN',
@@ -20,7 +20,7 @@ VALUES
 
     -- 매니저
     ('manager01',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+     '$2b$10$89KmBhYrOqDKWpzRKkzS4Oq03JInoJKP4LcedYZzWA4Uc.x//Gm7m',
      '김매니저',
      'manager01@erp.com',
      'MANAGER',
@@ -30,7 +30,7 @@ VALUES
 
     -- 일반 사용자
     ('user01',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+     '$2b$10$89KmBhYrOqDKWpzRKkzS4Oq03JInoJKP4LcedYZzWA4Uc.x//Gm7m',
      '이사원',
      'user01@erp.com',
      'USER',
@@ -39,7 +39,7 @@ VALUES
      NOW()),
 
     ('user02',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+     '$2b$10$89KmBhYrOqDKWpzRKkzS4Oq03JInoJKP4LcedYZzWA4Uc.x//Gm7m',
      '박사원',
      'user02@erp.com',
      'USER',
@@ -49,7 +49,7 @@ VALUES
 
     -- 비활성 사용자 (테스트용)
     ('user03',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+     '$2b$10$89KmBhYrOqDKWpzRKkzS4Oq03JInoJKP4LcedYZzWA4Uc.x//Gm7m',
      '최비활성',
      'user03@erp.com',
      'USER',

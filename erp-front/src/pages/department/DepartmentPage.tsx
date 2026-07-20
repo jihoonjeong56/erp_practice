@@ -164,7 +164,16 @@ export default function DepartmentPage() {
                   key={dept.id}
                   className="hover:bg-gray-50 transition-colors"
                 >
-                  {/* -------------------------~ing--------------------------- */}
+                  <td className="px-4 py-3 font-mono text-indigo-600">
+                    {dept.deptCode}
+                  </td>
+                  <td className="px-4 py-3 font-medium text-gray-800">
+                    {dept.deptName}
+                  </td>
+                  <td className="px-4 py-3 text-gray-500">
+                    {dept.parentName ?? "-"}
+                  </td>
+                  <td>{dept.sortOrder}</td>
                 </tr>
               ))
             )}

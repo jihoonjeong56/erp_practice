@@ -77,7 +77,7 @@ public class DepartmentService  {
     }
 
     public List<DepartmentResponse> getAllDepartments(){
-        return departmentRepository.findByUseYnOrderBySortOrderAsc("Y")
+        return departmentRepository.findAllByOrderBySortOrderAsc()
                 .stream()
                 .map(DepartmentResponse::new)
                 .toList();

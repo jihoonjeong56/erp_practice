@@ -18,4 +18,6 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     @Query("SELECT d From Department d LEFT JOIN FETCH d.children WHERE d.parent IS NULL ORDER BY d.sortOrder")
     List<Department> findAllTree();
 
+    List<Department> findAllByOrderBySortOrderAsc();
+
 }

@@ -162,12 +162,23 @@ export default function DepartmentPage() {
               departments.map((dept) => (
                 <tr
                   key={dept.id}
-                  className="hover:bg-gray-50 transition-colors"
+                  className={`transition-colors ${
+                    dept.useYn === "N"
+                      ? "bg-gray-50 opacity-50"
+                      : "hover:bg-gray-50"
+                  }`}
                 >
                   <td className="px-4 py-3 font-mono text-indigo-600">
                     {dept.deptCode}
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-800">
+                  <td
+                    className={`px-4 py-3 font-medium
+                    ${
+                      dept.useYn === "N"
+                        ? "text-gray-400 line-through"
+                        : "text-gray-800"
+                    }`}
+                  >
                     {dept.deptName}
                   </td>
                   <td className="px-4 py-3 text-gray-500">

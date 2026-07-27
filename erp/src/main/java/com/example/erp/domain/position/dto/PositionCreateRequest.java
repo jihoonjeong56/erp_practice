@@ -10,7 +10,7 @@ public class PositionCreateRequest {
     private String posCode;
 
     @NotBlank(message = "직급명은 필수입니다.")
-    private String posNAme;
+    private String posName;
 
     @NotBlank(message = "직급레벨은 필수입니다.")
     private int level;

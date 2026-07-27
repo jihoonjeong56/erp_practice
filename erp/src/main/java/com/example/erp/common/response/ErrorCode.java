@@ -29,12 +29,12 @@ public enum ErrorCode {
     CANNOT_DELETE_DEPARTMENT(HttpStatus.BAD_REQUEST, "D003", "하위부서가 있어 삭제할 수 없습니다."),
 
     /*직급*/
-    POSITION_NOT_FOUNT(HttpStatus.NOT_FOUND, "P001", "직급을 찾을 수 없습니다."),
+    POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "직급을 찾을 수 없습니다."),
     DUPLICATE_POSITION_CODE(HttpStatus.CONFLICT, "P002", "이미 사용 중인 직급 코드입니다."),
     CANNOT_DELETE_POSITION(HttpStatus.BAD_REQUEST, "P003", "해당 직급을 사용중인 직원이 있어 삭제할 수 없습니다."),
 
     /*직급*/
-    EMPLOYEE_NOT_FOUNT(HttpStatus.NOT_FOUND, "E001", "직원을 찾을 수 없습니다."),
+    EMPLOYEE_NOT_FOUND(HttpStatus.NOT_FOUND, "E001", "직원을 찾을 수 없습니다."),
     DUPLICATE_EMP_CODE(HttpStatus.CONFLICT, "E002", "이미 사용 중인 사원 번호 입니다."),
     DUPLICATE_EMPLOYEE_EMAIL(HttpStatus.BAD_REQUEST, "E003", "이미 사용중인 이메일입니다.");
 

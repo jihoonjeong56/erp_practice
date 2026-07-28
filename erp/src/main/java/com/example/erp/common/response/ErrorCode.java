@@ -35,7 +35,7 @@ public enum ErrorCode {
 
     /*직급*/
     EMPLOYEE_NOT_FOUND(HttpStatus.NOT_FOUND, "E001", "직원을 찾을 수 없습니다."),
-    DUPLICATE_EMP_CODE(HttpStatus.CONFLICT, "E002", "이미 사용 중인 사원 번호 입니다."),
+    DUPLICATE_EMP_NO(HttpStatus.CONFLICT, "E002", "이미 사용 중인 사원 번호 입니다."),
     DUPLICATE_EMPLOYEE_EMAIL(HttpStatus.BAD_REQUEST, "E003", "이미 사용중인 이메일입니다.");
 
     private final HttpStatus httpStatus;

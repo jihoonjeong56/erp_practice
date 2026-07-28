@@ -62,13 +62,13 @@ public class Employee extends BaseTimeEntity {
         this.status = status != null ? status: "ACTIVE";
     }
 
-    public void update(String empName, String email, String phone, Department department, Position position, LocalDateTime leaveDate, String status) {
+    public void update(String empName, String email, String phone, Department department, Position position,String status, LocalDateTime leaveDate) {
         this.empName = empName;
         this.email = email;
         this.phone = phone;
         this.department = department;
         this.position = position;
-        this.leaveDate = leaveDate;
         this.status = status;
+        this.leaveDate = leaveDate;
     }
 }

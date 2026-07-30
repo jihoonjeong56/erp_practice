@@ -11,15 +11,15 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     boolean existsByEmail(String email);
 
     // N+1 방지 fetch join
-    @Query("SELECT e FROM Employee e JOIN FETCH e.department JOIN FETCH e.position ")
+    @Query("SELECT e FROM Employee e JOIN FETCH e.department JOIN FETCH e.position")
     List<Employee> findAllWithDetails();
 
     // 부서별 직원 조회
-    @Query("SELECT e FROM Employee e JOIN FETCH e.department JOIN FETCH e.position" +
+    @Query("SELECT e FROM Employee e JOIN FETCH e.department JOIN FETCH e.position " +
             "WHERE e.department.id = :deptId")
     List<Employee> findByDeptId(@Param("deptId") Long deptId);
 
-    @Query("SELECT e FROM Employee e JOIN FETCH e.department JOIN FETCH e.position" +
+    @Query("SELECT e FROM Employee e JOIN FETCH e.department JOIN FETCH e.position " +
             "WHERE e.status = :status")
     List<Employee> findByStatus(@Param("status") String status);
 

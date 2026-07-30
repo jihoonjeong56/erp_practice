@@ -7,5 +7,5 @@ import java.util.List;
 public interface PositionRepository extends JpaRepository<Position, Long> {
     boolean existsByPosCode(String posCode);
     List<Position> findByUseYnOrderByLevelDesc(String useYn);
-    boolean existsByIdAndEmployees_IdNotNull(Long id);
+//    boolean existsByIdAndEmployees_IdNotNull(Long id);
 }

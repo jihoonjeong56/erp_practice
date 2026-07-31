@@ -1,4 +1,3 @@
-import { data } from "react-router-dom";
 import type { ApiResponse } from "../types/common";
 import type {
   Employee,

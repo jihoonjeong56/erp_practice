@@ -27,7 +27,7 @@ export interface EmployeeUpdateRequest {
   empName: string;
   email: string;
   phone?: string;
-  depId: number;
+  deptId: number;
   positionId: number;
   status: string;
   leaveDate?: string | null;

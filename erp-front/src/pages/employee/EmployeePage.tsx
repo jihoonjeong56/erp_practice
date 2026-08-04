@@ -161,6 +161,15 @@ export default function EmployeePage() {
       </div>
 
       {/* 에러 */}
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-200">
+          {error}
+        </div>
+      )}
+
+      {/* 테이블 */}
+      
+
     </div>
   );
 }

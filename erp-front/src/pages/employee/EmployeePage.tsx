@@ -126,5 +126,41 @@ export default function EmployeePage() {
     }
   };
 
-  return <div>EmployeePage</div>;
+  return (
+    <div>
+      {/* 헤더 */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">직원관리</h1>
+        <button
+          onClick={openCreate}
+          className="bg-indigo-600 text-white px-4 py-2 rounded-lg
+        text-sm font-medium hover:bg-indigo-700 transition-colors"
+        >
+          + 직원 등록
+        </button>
+      </div>
+      {/* 검색 / 필터 */}
+      <div className="flex gap-3 mb-4">
+        <input
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm
+        w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="이름, 사번, 부서 검색"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+        />
+        {["ALL", "ACTIVE", "LEAVE", "RESIGNED"].map((s) => (
+          <button
+            key={s}
+            onClick={() => setFilterStatus(s)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
+            ${filterStatus === s ? "bg-indigo-600 text-white" : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"}`}
+          >
+            {s === "ALL" ? "전체" : STAUS_LABEL[s]?.label}
+          </button>
+        ))}
+      </div>
+
+      {/* 에러 */}
+    </div>
+  );
 }

@@ -7,6 +7,7 @@ import type {
 import type { Department } from "../../types/department";
 import {
   createEmployee,
+  deleteEmployee,
   getEmployees,
   getPositions,
   updateEmployee,
@@ -122,6 +123,16 @@ export default function EmployeePage() {
       setShowModal(false);
       fetchAll();
     } catch (err: any) {
+      alert(err.response?.data?.message || "저장에 실패했습니다.");
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("정말 삭제하시겠습니까?")) return;
+    try {
+      await deleteEmployee(id);
+      fetchAll();
+    } catch (err: any) {
       alert(err.response?.data?.message || "삭제에 실패했습니다.");
     }
   };
@@ -168,8 +179,97 @@ export default function EmployeePage() {
       )}
 
       {/* 테이블 */}
-      
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 border-b border-gray-100">
+            <tr>
+              {[
+                "사번",
+                "이름",
+                "부서",
+                "직급",
+                "이메일",
+                "입사일",
+                "상태",
+                "관리",
+              ].map((h) => (
+                <th
+                  key={h}
+                  className="px-4 py-3 text-left text-xs font-semibold
+                text-gray-500 uppercase tracking-wider"
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {loading ? (
+              <tr>
+                <td colSpan={8} className="text-center py-10 text-gray-400">
+                  불러오는 중...
+                </td>
+              </tr>
+            ) : filtered.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="text-center py-10 text-gray-400">
+                  직원이 없습니다.
+                </td>
+              </tr>
+            ) : (
+              filtered.map((emp) => (
+                <tr
+                  key={emp.id}
+                  className={`transition-colors ${emp.status === "RESIGNED" ? "opacity-50 bg-gray-50" : "hover:bg-gray-50"}`}
+                >
+                  <td className="px-4 py-3 font-mono text-indigo-600 text-xs">
+                    {emp.empNo}
+                  </td>
+                  <td
+                    className={`px-4 py-3 font-medium ${emp.status === "RESIGNED" ? "text-gray-400 line-through" : "text-gray-800"}`}
+                  >
+                    {emp.empName}
+                  </td>
+                  <td className="px-4 py-3 text-gray-500">{emp.deptName}</td>
+                  <td className="px-4 py-3 text-gray-500">
+                    {emp.positionName}
+                  </td>
+                  <td className="px-4 py-3 text-gray-500">{emp.email}</td>
+                  <td className="px-4 py-3 text-gray-500">
+                    {emp.hireDate?.slice(0, 10)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium
+                      ${STAUS_LABEL[emp.status]?.style}`}
+                    >
+                      {STAUS_LABEL[emp.status]?.label}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <button
+                        className="text-xs text-indigo-600 hover: text-indigo-800 font-medium"
+                        onClick={() => openEdit(emp)}
+                      >
+                        수정
+                      </button>
+                      <button
+                        className="text-xs text-indigo-500 hover: text-indigo-700 font-medium"
+                        onClick={() => handleDelete(emp.id)}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
 
+        {/* 하단 통계 */}
+      </div>
     </div>
   );
 }

@@ -8,4 +8,6 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
     boolean existsByPosCode(String posCode);
     List<Position> findByUseYnOrderByLevelDesc(String useYn);
 //    boolean existsByIdAndEmployees_IdNotNull(Long id);
+
+    long countByUseYn(String useYn);
 }

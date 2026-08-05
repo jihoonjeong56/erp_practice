@@ -20,4 +20,6 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
     List<Department> findAllByOrderBySortOrderAsc();
 
+    long countByUseYn(String useYn);
+
 }

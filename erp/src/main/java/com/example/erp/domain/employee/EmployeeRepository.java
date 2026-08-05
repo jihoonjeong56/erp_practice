@@ -23,4 +23,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             "WHERE e.status = :status")
     List<Employee> findByStatus(@Param("status") String status);
 
+    long countByStatus(String status);
+
 }

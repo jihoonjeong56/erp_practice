@@ -439,6 +439,67 @@ export default function EmployeePage() {
               )}
 
               {/* 상태 / 퇴직일 - 수정시에만 */}
+              {editTarget && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      상태 <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      className="w-full border  border-gray-300 rounded-lg px-3 py-2
+                       text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 "
+                      value={form.status}
+                      onChange={(e) =>
+                        setForm({ ...form, status: e.target.value })
+                      }
+                    >
+                      <option value="ACTIVE">재직중</option>
+                      <option value="LEAVE">휴직</option>
+                      <option value="RESIGNED">퇴직</option>
+                    </select>
+                  </div>
+
+                  {form.status === "RESIGNED" && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        퇴직일
+                      </label>
+                      <input
+                        type="date"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2
+                       text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        value={form.leaveDate}
+                        onChange={(e) =>
+                          setForm({ ...form, leaveDate: e.target.value })
+                        }
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* 에러 */}
+            {error && <p className="flex justify-end gap-2 mt-6">{error}</p>}
+
+            {/* 버튼 */}
+            <div>
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  setError("");
+                }}
+                className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 text-sm text-white
+               bg-indigo-600 rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                {editTarget ? "수정" : "등록"}
+              </button>
             </div>
           </div>
         </div>

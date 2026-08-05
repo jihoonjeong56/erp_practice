@@ -269,7 +269,38 @@ export default function EmployeePage() {
         </table>
 
         {/* 하단 통계 */}
+        <div
+          className="px-4 py-3 border-t border-gray-100 bg-gray-50 
+        flex gap-4 text-xs text-gray-500"
+        >
+          <span>
+            전체 <b className="text-gray-700">{employees.length}</b>명
+          </span>
+          <span>
+            재직중{" "}
+            <b className="text-green-600">
+              {employees.filter((e) => e.status === "ACTIVE").length}
+            </b>
+            명
+          </span>
+          <span>
+            휴직{" "}
+            <b className="text-yellow-600">
+              {employees.filter((e) => e.status === "LEAVE").length}
+            </b>
+            명
+          </span>
+          <span>
+            퇴직{" "}
+            <b className="text-gray-400">
+              {employees.filter((e) => e.status === "RESIGNED").length}
+            </b>
+            명
+          </span>
+        </div>
       </div>
+
+      {/* 등록 수정 모달 */}
     </div>
   );
 }

@@ -301,6 +301,148 @@ export default function EmployeePage() {
       </div>
 
       {/* 등록 수정 모달 */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div
+            className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 
+        max-h-[90vh] overflow-y-auto"
+          >
+            <h2 className="text-lg font-bold text-gray-800 mb-4">
+              {editTarget ? "직원 수정" : "직원 등록"}
+            </h2>
+            <div className="space-y-3">
+              {/* 사번 - 등록 시에만 */}
+              {!editTarget && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    사번 <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2
+                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="예: EMP2024001"
+                    value={form.empNo}
+                    onChange={(e) =>
+                      setForm({ ...form, empNo: e.target.value })
+                    }
+                  />
+                </div>
+              )}
+
+              {/* 이름 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  이름 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2
+                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="직원명 입력"
+                  value={form.empName}
+                  onChange={(e) =>
+                    setForm({ ...form, empName: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* 이메일 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  이메일 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2
+                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="이메일 입력"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+              </div>
+
+              {/* 연락처 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  연락처
+                </label>
+                <input
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2
+                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="010-0000-0000"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                />
+              </div>
+
+              {/* 부서 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  부서 <span className="text-red-500">*</span>
+                </label>
+                <select
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2
+                text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  value={form.deptId}
+                  onChange={(e) =>
+                    setForm({ ...form, deptId: Number(e.target.value) })
+                  }
+                >
+                  <option value={0}>부서 선택</option>
+                  {departments
+                    .filter((d) => d.useYn === "Y")
+                    .map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.parentName ? `${d.parentName} > ` : ""}
+                        {d.deptName}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              {/* 직급 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  직급 <span className="text-red-500">*</span>
+                </label>
+                <select
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2
+                text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  value={form.positionId}
+                  onChange={(e) =>
+                    setForm({ ...form, positionId: Number(e.target.value) })
+                  }
+                >
+                  <option value={0}>직급 선택</option>
+                  {positions.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.posName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 입사일 - 등록 시에만 */}
+              {!editTarget && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    입사일 <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full border border-gray-300 rounded-lg px3 py-2
+                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    value={form.hireDate}
+                    onChange={(e) =>
+                      setForm({ ...form, hireDate: e.target.value })
+                    }
+                  />
+                </div>
+              )}
+
+              {/* 상태 / 퇴직일 - 수정시에만 */}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

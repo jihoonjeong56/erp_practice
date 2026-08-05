@@ -53,7 +53,8 @@ export default function EmployeePage() {
       setEmployees(empData);
       setDepartments(deptData);
       setPositions(posData);
-    } catch {
+    } catch(err) {
+      console.log("에러: ", err)
       setError("데이터를 불러오지 못했습니다.");
     } finally {
       setLoading(false);

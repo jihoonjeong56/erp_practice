@@ -42,6 +42,7 @@ export const deleteEmployee = async (id: number): Promise<void> => {
 };
 
 export const getPositions = async (): Promise<Position[]> => {
-  const res = await axiosInstance.get<ApiResponse<Position[]>>("api/positions");
+  const res =
+    await axiosInstance.get<ApiResponse<Position[]>>("/api/positions");
   return res.data.data;
 };

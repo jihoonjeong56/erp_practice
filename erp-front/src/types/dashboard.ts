@@ -1,6 +1,6 @@
 export interface DashboardStats {
   totalEmployees: number;
-  activeEMployees: number;
+  activeEmployees: number;
   leaveEmployees: number;
   resignedEmployees: number;
   totalDepartments: number;

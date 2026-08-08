@@ -6,6 +6,7 @@ import Layout from "../components/layout/Layout";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 import DepartmentPage from "../pages/department/DepartmentPage";
 import EmployeePage from "../pages/employee/EmployeePage";
+import PositionPage from "../pages/position/PositionPage";
 
 export default function index() {
   return (
@@ -21,6 +22,7 @@ export default function index() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/departments" element={<DepartmentPage />} />
             <Route path="/employees" element={<EmployeePage />} />
+            <Route path="/positons" element={<PositionPage />} />
             <Route path="/inventory" element={<div>재고 관리(준비중)</div>} />
             <Route path="/orders" element={<div>발주 관리(준비중)</div>} />
             <Route path="/production" element={<div>생산 관리(준비중)</div>} />

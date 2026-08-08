@@ -184,6 +184,116 @@ export default function PositionPage() {
           </tbody>
         </table>
       </div>
+
+      {/* 모달 */}
+      {showModal && (
+        <div
+          className="fixed inset-0 bg-black/40 flex items-center
+        justify-center z-50"
+        >
+          <div className="bg-white rounded-xl w-full max-w-md p-6">
+            <h2 className="text-lg font-bold text-gray-800 mb-4">
+              {editTarget ? "직급수정" : "직급 등록"}
+            </h2>
+            <div className="space-y-3">
+              {/* 직급 코드 - 등록 시에만 */}
+              {!editTarget && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    직급 코드<span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2
+                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="예: MANAGER"
+                    value={form.posCode}
+                    onChange={(e) =>
+                      setForm({ ...form, posCode: e.target.value })
+                    }
+                  />
+                </div>
+              )}
+
+              {/* 직급명 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  직급명 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2
+                 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="예: 과장"
+                  value={form.posName}
+                  onChange={(e) =>
+                    setForm({ ...form, posName: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* 레벨 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  레벨 <span className="text-red-500">*</span>
+                  <span className="text-xs text-gray-400 ml-1">
+                    (높을수록 상위 직급)
+                  </span>
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={10}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2
+                text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  value={form.level}
+                  onChange={(e) =>
+                    setForm({ ...form, level: Number(e.target.value) })
+                  }
+                />
+              </div>
+
+              {/* 사용여부 - 수정 시에만 */}
+              {editTarget && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    사용여부
+                  </label>
+                  <select
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2
+                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    value={form.useYn}
+                    onChange={(e) =>
+                      setForm({ ...form, useYn: e.target.value })
+                    }
+                  >
+                    <option value="Y">사용</option>
+                    <option value="N">미사용</option>
+                  </select>
+                </div>
+              )}
+            </div>
+            {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  setError("");
+                }}
+                className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 text-sm text-white bg-indigo-600 
+              rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                {editTarget ? "수정" : "등록"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

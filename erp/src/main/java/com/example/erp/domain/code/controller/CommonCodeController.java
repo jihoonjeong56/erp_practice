@@ -1,10 +1,7 @@
 package com.example.erp.domain.code.controller;
 
 import com.example.erp.common.response.ApiResponse;
-import com.example.erp.domain.code.dto.CodeGroupCreateRequest;
-import com.example.erp.domain.code.dto.CodeGroupResponse;
-import com.example.erp.domain.code.dto.CommonCodeCreateRequest;
-import com.example.erp.domain.code.dto.CommonCodeResponse;
+import com.example.erp.domain.code.dto.*;
 import com.example.erp.domain.code.service.CommonCodeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +59,7 @@ public class CommonCodeController {
     public ResponseEntity<ApiResponse<Void>> updateCode(
             @PathVariable String groupCode,
             @PathVariable Long codeId,
-            @Valid @RequestBody CommonCodeCreateRequest request
+            @Valid @RequestBody CommonCodeUpdateRequest request
     ){
         commonCodeService.updateCode(groupCode, codeId, request);
         return ResponseEntity.ok(ApiResponse.ok(null));

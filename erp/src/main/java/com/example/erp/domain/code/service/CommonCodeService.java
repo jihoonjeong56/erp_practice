@@ -2,10 +2,7 @@ package com.example.erp.domain.code.service;
 
 import com.example.erp.common.exception.BusinessException;
 import com.example.erp.common.response.ErrorCode;
-import com.example.erp.domain.code.dto.CodeGroupCreateRequest;
-import com.example.erp.domain.code.dto.CodeGroupResponse;
-import com.example.erp.domain.code.dto.CommonCodeCreateRequest;
-import com.example.erp.domain.code.dto.CommonCodeResponse;
+import com.example.erp.domain.code.dto.*;
 import com.example.erp.domain.code.entity.CodeGroup;
 import com.example.erp.domain.code.entity.CommonCode;
 import com.example.erp.domain.code.repository.CodeGroupRepository;
@@ -88,7 +85,7 @@ public class CommonCodeService {
 
     @Transactional
     @CacheEvict(value = "commonCode", key = "#groupCode")
-    public void updateCode(String groupCode, Long codeId, CommonCodeCreateRequest request) {
+    public void updateCode(String groupCode, Long codeId, CommonCodeUpdateRequest request) {
         CommonCode code = commonCodeRepository.findById(codeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMON_CODE_NOT_FOUNT));
         code.update(request.getCodeName(), request.getSortOrder(), "Y");
@@ -96,7 +93,7 @@ public class CommonCodeService {
     }
 
     @Transactional
-    @CacheEvict(value = "commomCode", key = "#groupCode")
+    @CacheEvict(value = "commonCode", key = "#groupCode")
     public void deleteCode(String groupCode, Long codeId) {
         CommonCode code = commonCodeRepository.findById(codeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMON_CODE_NOT_FOUNT));

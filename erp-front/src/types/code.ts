@@ -26,3 +26,14 @@ export interface CommonCodeCreateRequest {
   codeName: string;
   sortOrder: number;
 }
+
+export interface CodeGroupUpdateRequest {
+  groupName: string;
+  description?: string;
+}
+
+export interface CommonCodeUpdateRequest {
+  codeName: string;
+  ortOrder: number;
+  useYn: string;
+}

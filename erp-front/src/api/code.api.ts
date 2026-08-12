@@ -30,7 +30,7 @@ export const updateCodeGroup = async (
   groupCode: string,
   data: CodeGroupUpdateRequest,
 ): Promise<void> => {
-  await axiosInstance.put(`/api/codes/groups${groupCode}`, data);
+  await axiosInstance.put(`/api/codes/groups/${groupCode}`, data);
 };
 
 export const getCommonCode = async (

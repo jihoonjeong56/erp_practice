@@ -34,6 +34,6 @@ export interface CodeGroupUpdateRequest {
 
 export interface CommonCodeUpdateRequest {
   codeName: string;
-  ortOrder: number;
+  sortOrder: number;
   useYn: string;
 }

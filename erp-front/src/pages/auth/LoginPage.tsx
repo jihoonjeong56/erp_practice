@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import axiosInstance from "../../api/axiosInstance";
-import type { ApiResponse, LoginResponse } from "../../types/auth";
+import type {LoginResponse } from "../../types/auth";
+import type { ApiResponse } from "../../types/common";
 
 export default function LoginPage() {
   const navigete = useNavigate();

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import  {
+import {
   getCodeGroups,
   createCodeGroup,
   updateCodeGroup,
-  getCommonCodes,
+  getCommonCode,
   createCommonCode,
   updateCommonCode,
   deleteCommonCode,
@@ -49,7 +49,7 @@ export default function CodePage() {
   // 코드 목록 조회
   const fetchCodes = async (groupCode: string) => {
     try {
-      setCodes(await getCommonCodes(groupCode));
+      setCodes(await getCommonCode(groupCode));
     } catch {
       setError("코드 목록을 불러오지 못했습니다.");
     }

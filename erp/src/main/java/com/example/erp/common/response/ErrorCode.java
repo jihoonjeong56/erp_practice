@@ -36,7 +36,15 @@ public enum ErrorCode {
     /*직급*/
     EMPLOYEE_NOT_FOUND(HttpStatus.NOT_FOUND, "E001", "직원을 찾을 수 없습니다."),
     DUPLICATE_EMP_NO(HttpStatus.CONFLICT, "E002", "이미 사용 중인 사원 번호 입니다."),
-    DUPLICATE_EMPLOYEE_EMAIL(HttpStatus.BAD_REQUEST, "E003", "이미 사용중인 이메일입니다.");
+    DUPLICATE_EMPLOYEE_EMAIL(HttpStatus.BAD_REQUEST, "E003", "이미 사용중인 이메일입니다."),
+
+    /*품목*/
+    ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "품목을 찾을 수 없습니다."),
+    DUPLICATE_ITEM_CODE(HttpStatus.CONFLICT, "I002", "이미 사용 중인 품목 코드 입니다."),
+
+    /*재고*/
+    STOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "S001", "재고 정보를 찾을 수 없습니다."),
+    INSUFFICIENT_STOCK(HttpStatus.BAD_REQUEST, "S002", "재고가 부족합니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

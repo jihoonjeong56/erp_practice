@@ -53,4 +53,5 @@ public class ItemService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.ITEM_NOT_FOUND));
         item.update(request.getItemName(), request.getUnit(), request.getSafetyStock(), request.getUseYn());
     }
+    // 삭제의 경우 입출고 이력이 쌓인 품목을 지우면 이력이 깨짐
 }

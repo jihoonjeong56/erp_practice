@@ -289,3 +289,32 @@ VALUES
 -- PROD2   : 2명 (과장, 대리)
 -- SALES1  : 3명 (부장, 과장, 사원-퇴직)
 -- RND     : 2명 (이사, 주임)
+
+
+-- 단위 공통 코드
+INSERT INTO code_group (group_code, group_name, description, use_yn, created_at, updated_at)
+VALUES ('ITEM_UNIT', '품목 단위', '품목 수량 단위', 'Y', NOW(), NOW());
+
+INSERT INTO common_code (group_code, code, code_name, sort_order, use_yn, created_at, updated_at)
+VALUES
+    ('ITEM_UNIT', 'EA',  '개',   1, 'Y', NOW(), NOW()),
+    ('ITEM_UNIT', 'BOX', '박스', 2, 'Y', NOW(), NOW()),
+    ('ITEM_UNIT', 'KG',  'kg',   3, 'Y', NOW(), NOW());
+
+-- 품목
+INSERT INTO item (item_code, item_name, unit, safety_stock, use_yn, created_at, updated_at)
+VALUES
+    ('ITM-001', '알루미늄 판재',   'KG',  200, 'Y', NOW(), NOW()),
+    ('ITM-002', '볼트 M8',        'EA',  1000, 'Y', NOW(), NOW()),
+    ('ITM-003', '포장 박스(중)',   'BOX', 100, 'Y', NOW(), NOW()),
+    ('ITM-004', '도료(회색)',     'EA',  50,  'Y', NOW(), NOW()),
+    ('ITM-005', '베어링 6204',    'EA',  300, 'Y', NOW(), NOW());
+
+-- 재고 (ITM-005는 안전재고 미달)
+INSERT INTO stock (item_id, quantity, created_at, updated_at)
+VALUES
+    ((SELECT id FROM item WHERE item_code = 'ITM-001'), 850,  NOW(), NOW()),
+    ((SELECT id FROM item WHERE item_code = 'ITM-002'), 5200, NOW(), NOW()),
+    ((SELECT id FROM item WHERE item_code = 'ITM-003'), 340,  NOW(), NOW()),
+    ((SELECT id FROM item WHERE item_code = 'ITM-004'), 75,   NOW(), NOW()),
+    ((SELECT id FROM item WHERE item_code = 'ITM-005'), 120,  NOW(), NOW());

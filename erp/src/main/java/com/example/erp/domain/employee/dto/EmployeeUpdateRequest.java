@@ -17,7 +17,7 @@ public class EmployeeUpdateRequest {
     private String phone;
 
     @NotBlank(message = "부서는 필수입니다.")
-    private Long depId;
+    private Long deptId;
 
     @NotBlank(message = "직급은 필수입니다")
     private Long positionId;

@@ -69,7 +69,7 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.EMPLOYEE_NOT_FOUND));
 
-        Department department = departmentRepository.findById(request.getDepId())
+        Department department = departmentRepository.findById(request.getDeptId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.DEPARTMENT_NOT_FOUNT));
 
         Position position = positionRepository.findById(request.getPositionId())

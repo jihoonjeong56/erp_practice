@@ -6,6 +6,7 @@ import com.example.erp.domain.position.dto.PositionCreateRequest;
 import com.example.erp.domain.position.dto.PositionResponse;
 import com.example.erp.domain.position.dto.PositionUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +34,8 @@ public class PositionService {
     }
 
     public List<PositionResponse> getAll(){
-        return positionRepository.findByUseYnOrderByLevelDesc("Y")
-                .stream()
-                .map(PositionResponse::new)
-                .toList();
+        return positionRepository.findAll(Sort.by(Sort.Direction.DESC, "level"))
+                .stream().map(PositionResponse::new).toList();
     }
 
     public PositionResponse getPosition(Long id){
@@ -48,7 +47,7 @@ public class PositionService {
     public void update(Long id,  PositionUpdateRequest request){
         Position position = positionRepository.findById(id)
                 .orElseThrow(()-> new BusinessException(ErrorCode.POSITION_NOT_FOUND));
-        position.update(request.getPosName(), request.getLevel(), "Y");
+        position.update(request.getPosName(), request.getLevel(), request.getUseYn());
     }
 
     @Transactional

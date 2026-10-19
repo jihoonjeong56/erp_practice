@@ -37,6 +37,15 @@ public class CommonCodeController {
         return ResponseEntity.ok(ApiResponse.ok(commonCodeService.getGroup(groupCode)));
     }
 
+    @PutMapping("/groups/{groupCode}")
+    public ResponseEntity<ApiResponse<Void>> updateGroup(
+            @PathVariable String groupCode,
+            @Valid @RequestBody CodeGroupUpdateRequest request
+    ){
+        commonCodeService.updateGroup(groupCode, request);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
 //    ----------------------------------------------------------------------------------
     
     @PostMapping("/groups/{groupCode}/codes")
@@ -55,7 +64,7 @@ public class CommonCodeController {
         return ResponseEntity.ok(ApiResponse.ok(commonCodeService.getCodesByGroup(groupCode)));
     }
 
-    @PutMapping("groups/{groupCode}/codes/{codeId}")
+    @PutMapping("/groups/{groupCode}/codes/{codeId}")
     public ResponseEntity<ApiResponse<Void>> updateCode(
             @PathVariable String groupCode,
             @PathVariable Long codeId,

@@ -9,6 +9,7 @@ import com.example.erp.domain.code.repository.CodeGroupRepository;
 import com.example.erp.domain.code.repository.CommonCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +49,10 @@ public class CommonCodeService {
     }
 
     @Transactional
-    public void updateGroup(String groupCode, CodeGroupCreateRequest request) {
+    public void updateGroup(String groupCode, CodeGroupUpdateRequest request) {
         CodeGroup group = codeGroupRepository.findById(groupCode)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CODE_GROUP_NOT_FOUNT));
-        group.update(request.getGroupName(), request.getDescription(), "Y");
+        group.update(request.getGroupName(), request.getDescription(), group.getUseYn());
     }
 
     @Transactional
@@ -74,7 +75,7 @@ public class CommonCodeService {
     }
 
 
-    @CacheEvict(value = "commonCode", key = "#groupCode")
+    @Cacheable(value = "commonCode", key = "#groupCode")
     public List<CommonCodeResponse> getCodesByGroup(String groupCode) {
         return commonCodeRepository
                 .findByCodeGroup_GroupCodeAndUseYnOrderBySortOrderAsc(groupCode, "Y")
@@ -88,7 +89,7 @@ public class CommonCodeService {
     public void updateCode(String groupCode, Long codeId, CommonCodeUpdateRequest request) {
         CommonCode code = commonCodeRepository.findById(codeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMON_CODE_NOT_FOUNT));
-        code.update(request.getCodeName(), request.getSortOrder(), "Y");
+        code.update(request.getCodeName(), request.getSortOrder(), request.getUseYn());
 
     }
 

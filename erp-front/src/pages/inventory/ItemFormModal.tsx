@@ -14,12 +14,7 @@ interface Props {
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
 
-export default function ItemFormModal({
-  item,
-  units,
-  onClose,
-  onSaved,
-}: Props) {
+export default function ItemFormModal({ item, units, onClose, onSaved }: Props) {
   const [form, setForm] = useState({
     itemCode: item?.itemCode ?? "",
     itemName: item?.itemName ?? "",

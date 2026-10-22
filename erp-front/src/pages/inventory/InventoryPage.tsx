@@ -5,6 +5,7 @@ import type { CommonCode } from "../../types/code";
 import type { Item, Stock, StockTxType } from "../../types/inventory";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import ItemFormModal from "./ItemFormModal";
+import StockTxModal from "./StockTxModal";
 
 type Filter = "ALL" | "LOW";
 

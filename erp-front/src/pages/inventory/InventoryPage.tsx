@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Item, Stock, StockTxType } from "../../types/inventory";
-import type { CommonCode } from "../../types/code";
-import { getItems, getStocks } from "../../api/inventory.api";
 import { getCommonCode } from "../../api/code.api";
+import { getItems, getStocks } from "../../api/inventory.api";
+import type { CommonCode } from "../../types/code";
+import type { Item, Stock, StockTxType } from "../../types/inventory";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import ItemFormModal from "./ItemFormModal";
 
 type Filter = "ALL" | "LOW";
 
@@ -64,11 +65,13 @@ export default function InventoryPage() {
   });
 
   const lowCount = stocks.filter((s) => s.lowStock).length;
+
   const handleSaved = () => {
     setItemModal(null);
     setTxModal(null);
     fetchAll();
   };
+
   return (
     <div>
       {/* 헤더 */}
@@ -81,15 +84,16 @@ export default function InventoryPage() {
           + 품목 등록
         </button>
       </div>
-      {/* 검색/ 필터 */}
-      <div>
+
+      {/* 검색 / 필터 */}
+      <div className="flex gap-3 mb-4">
         <input
-          className="border-gray-300 rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           placeholder="품목명, 품목코드 검색"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
         />
-        {(["ALL", "LOw"] as Filter[]).map((f) => (
+        {(["ALL", "LOW"] as Filter[]).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
@@ -99,7 +103,7 @@ export default function InventoryPage() {
                 : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
             }`}
           >
-            {f === "ALL" ? "전체" : `재고부족(${lowCount})`}
+            {f === "ALL" ? "전체" : `재고 부족 (${lowCount})`}
           </button>
         ))}
       </div>
@@ -115,26 +119,145 @@ export default function InventoryPage() {
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              {[
-                "품목코드",
-                "품목명",
-                "현 재고",
-                "안전제고",
-                "상태",
-                "관리",
-              ].map((h) => (
-                <th
-                  key={h}
-                  className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
-                >
-                  {h}
-                </th>
-              ))}
+              {["품목코드", "품목명", "현재고", "안전재고", "상태", "관리"].map(
+                (h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >
+                    {h}
+                  </th>
+                ),
+              )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50"></tbody>
+          <tbody className="divide-y divide-gray-50">
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="text-center py-10 text-gray-400">
+                  불러오는 중...
+                </td>
+              </tr>
+            ) : filtered.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center py-10 text-gray-400">
+                  표시할 품목이 없습니다.
+                </td>
+              </tr>
+            ) : (
+              filtered.map((s) => {
+                const item = itemMap.get(s.itemId);
+                const unused = item?.useYn === "N";
+                return (
+                  <tr
+                    key={s.itemId}
+                    className={`transition-colors ${
+                      unused
+                        ? "opacity-50 bg-gray-50"
+                        : s.lowStock
+                          ? "bg-red-50/50 hover:bg-red-50"
+                          : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <td className="px-4 py-3 font-mono text-indigo-600 text-xs">
+                      {s.itemCode}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-gray-800">
+                      {s.itemName}
+                    </td>
+                    <td className="px-4 py-3 text-gray-800">
+                      {s.quantity.toLocaleString()} {unitLabel(s.unit)}
+                    </td>
+                    <td className="px-4 py-3 text-gray-500">
+                      {s.safetyStock.toLocaleString()} {unitLabel(s.unit)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {unused ? (
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                          미사용
+                        </span>
+                      ) : s.lowStock ? (
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                          재고 부족
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                          정상
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-3">
+                        <button
+                          disabled={unused}
+                          onClick={() => setTxModal({ stock: s, type: "IN" })}
+                          className="text-xs text-indigo-600 hover:text-indigo-800 font-medium disabled:text-gray-300 disabled:cursor-not-allowed"
+                        >
+                          입고
+                        </button>
+                        <button
+                          disabled={unused}
+                          onClick={() => setTxModal({ stock: s, type: "OUT" })}
+                          className="text-xs text-rose-500 hover:text-rose-700 font-medium disabled:text-gray-300 disabled:cursor-not-allowed"
+                        >
+                          출고
+                        </button>
+                        <button
+                          onClick={() => setHistoryStock(s)}
+                          className="text-xs text-gray-600 hover:text-gray-800 font-medium"
+                        >
+                          이력
+                        </button>
+                        <button
+                          onClick={() => item && setItemModal({ item })}
+                          className="text-xs text-gray-600 hover:text-gray-800 font-medium"
+                        >
+                          수정
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
         </table>
+
+        {/* 하단 요약 */}
+        <div className="px-4 py-3 border-t border-gray-100 bg-gray-50 flex gap-4 text-xs text-gray-500">
+          <span>
+            전체 품목 <b className="text-gray-700">{stocks.length}</b>개
+          </span>
+          <span>
+            재고 부족 <b className="text-red-600">{lowCount}</b>개
+          </span>
+        </div>
       </div>
+
+      {/* 모달 */}
+      {itemModal && (
+        <ItemFormModal
+          item={itemModal.item}
+          units={units}
+          onClose={() => setItemModal(null)}
+          onSaved={handleSaved}
+        />
+      )}
+      {txModal && (
+        <StockTxModal
+          stock={txModal.stock}
+          type={txModal.type}
+          unitLabel={unitLabel(txModal.stock.unit)}
+          onClose={() => setTxModal(null)}
+          onSaved={handleSaved}
+        />
+      )}
+      {historyStock && (
+        <StockHistoryModal
+          stock={historyStock}
+          onClose={() => setHistoryStock(null)}
+        />
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import type { Item, Stock, StockTxType } from "../../types/inventory";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import ItemFormModal from "./ItemFormModal";
 import StockTxModal from "./StockTxModal";
+import StockHistoryModal from "./StockHistoryModal";
 
 type Filter = "ALL" | "LOW";
 

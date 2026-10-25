@@ -2,14 +2,18 @@ package com.example.erp.domain.employee;
 
 import com.example.erp.common.exception.BusinessException;
 import com.example.erp.common.response.ErrorCode;
+import com.example.erp.common.response.PageResponse;
 import com.example.erp.domain.department.Department;
 import com.example.erp.domain.department.DepartmentRepository;
 import com.example.erp.domain.employee.dto.EmployeeCreateRequest;
 import com.example.erp.domain.employee.dto.EmployeeResponse;
+import com.example.erp.domain.employee.dto.EmployeeSearchCondition;
 import com.example.erp.domain.employee.dto.EmployeeUpdateRequest;
 import com.example.erp.domain.position.Position;
 import com.example.erp.domain.position.PositionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +26,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final PositionRepository positionRepository;
+    private final EmployeeQueryRepository employeeQueryRepository;
 
     @Transactional
     public Long create(EmployeeCreateRequest request) {
@@ -92,4 +97,10 @@ public class EmployeeService {
         employeeRepository.delete(employee);
     }
 
+    public PageResponse<EmployeeResponse> search(EmployeeSearchCondition condition, Pageable pageable){
+        Page<EmployeeResponse> result = employeeQueryRepository
+                .search(condition, pageable)
+                .map(EmployeeResponse::new);
+        return new PageResponse<>(result);
+    }
 }

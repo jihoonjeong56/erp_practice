@@ -40,3 +40,12 @@ export interface Position {
   level: number;
   useYn: string;
 }
+
+export interface EmployeeSearchParams {
+  keyword?: string;
+  deptId?: number;
+  positionId?: number;
+  status?: string;
+  page: number;
+  size: number;
+}

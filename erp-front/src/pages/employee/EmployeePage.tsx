@@ -1,178 +1,232 @@
 import { useEffect, useState } from "react";
-import type {
-  Position,
-  Employee,
-  EmployeeCreateRequest,
-} from "../../types/employee";
-import type { Department } from "../../types/department";
-import {
-  createEmployee,
-  deleteEmployee,
-  getEmployees,
-  getPositions,
-  updateEmployee,
-} from "../../api/employee.api";
+import { getDashboardStats } from "../../api/dashboard.api";
 import { getDepartments } from "../../api/department.api";
+import {
+  deleteEmployee,
+  getPositions,
+  searchEmployees,
+} from "../../api/employee.api";
+import Pagination from "../../components/common/Pagination";
+import type { PageResponse } from "../../types/common";
+import type { DashboardStats } from "../../types/dashboard";
+import type { Department } from "../../types/department";
+import type { Employee, Position } from "../../types/employee";
+import { getErrorMessage } from "../../utils/getErrorMessage";
+import EmployeeFormModal from "./EmployeeFormModal";
 
-const STAUS_LABEL: Record<string, { label: string; style: string }> = {
+const PAGE_SIZE = 10;
+
+const STATUS_LABEL: Record<string, { label: string; style: string }> = {
   ACTIVE: { label: "재직중", style: "bg-green-100 text-green-700" },
   LEAVE: { label: "휴직", style: "bg-yellow-100 text-yellow-700" },
   RESIGNED: { label: "퇴직", style: "bg-red-100 text-red-700" },
 };
+const STATUS_FILTERS = ["ALL", "ACTIVE", "LEAVE", "RESIGNED"];
+
+const selectClass =
+  "border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500";
+
 export default function EmployeePage() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [result, setResult] = useState<PageResponse<Employee> | null>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [editTarget, setEditTarget] = useState<Employee | null>(null);
   const [error, setError] = useState("");
-  const [filterStatus, setFilterStatus] = useState("ALL");
-  const [searchKeyword, setSearchKeyword] = useState("");
 
-  const initialForm = {
-    empNo: "",
-    empName: "",
-    email: "",
-    phone: "",
-    deptId: 0,
-    positionId: 0,
-    hireDate: "",
-    status: "ACTIVE",
-    leaveDate: "",
-  };
-  const [form, setForm] = useState(initialForm);
-  const fetchAll = async () => {
-    setLoading(true);
-    try {
-      const [empData, deptData, posData] = await Promise.all([
-        getEmployees(),
-        getDepartments(),
-        getPositions(),
-      ]);
-      setEmployees(empData);
-      setDepartments(deptData);
-      setPositions(posData);
-    } catch(err) {
-      console.log("에러: ", err)
-      setError("데이터를 불러오지 못했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // 검색 조건
+  const [keywordInput, setKeywordInput] = useState(""); // 입력 중인 값
+  const [keyword, setKeyword] = useState(""); // 검색 버튼/Enter로 확정된 값
+  const [status, setStatus] = useState("ALL");
+  const [deptId, setDeptId] = useState(0);
+  const [positionId, setPositionId] = useState(0);
+  const [page, setPage] = useState(0);
+
+  // 등록/수정/삭제 후 목록을 다시 불러오기 위한 값
+  const [reloadKey, setReloadKey] = useState(0);
+  const reload = () => setReloadKey((k) => k + 1);
+
+  const [modal, setModal] = useState<{ employee: Employee | null } | null>(null);
+
+  // 부서/직급 목록은 한 번만 조회
   useEffect(() => {
-    fetchAll();
+    Promise.all([getDepartments(), getPositions()])
+      .then(([deptData, posData]) => {
+        setDepartments(deptData);
+        setPositions(posData);
+      })
+      .catch((err) =>
+        setError(getErrorMessage(err, "부서/직급 목록을 불러오지 못했습니다.")),
+      );
   }, []);
 
-  // 필터링
-  const filtered = employees.filter((e) => {
-    const matchStatus = filterStatus === "ALL" || e.status === filterStatus;
-    const matchSearch =
-      !searchKeyword ||
-      e.empName.includes(searchKeyword) ||
-      e.empNo.includes(searchKeyword) ||
-      e.deptName.includes(searchKeyword);
-    return matchStatus && matchSearch;
-  });
-
-  const openCreate = () => {
-    setEditTarget(null);
-    setForm(initialForm);
-    setShowModal(true);
-  };
-
-  const openEdit = (emp: Employee) => {
-    setEditTarget(emp);
-    setForm({
-      empNo: emp.empNo,
-      empName: emp.empName,
-      email: emp.email,
-      phone: emp.phone ?? "",
-      deptId: emp.deptId,
-      positionId: emp.positionId,
-      hireDate: emp.hireDate?.slice(0, 10) ?? "",
-      status: emp.status,
-      leaveDate: emp.leaveDate?.slice(0, 10) ?? "",
-    });
-    setShowModal(true);
-  };
-
-  const handleSubmit = async () => {
-    setError("");
-    try {
-      if (editTarget) {
-        await updateEmployee(editTarget.id, {
-          empName: form.empName,
-          email: form.email,
-          phone: form.phone,
-          deptId: form.deptId,
-          positionId: form.positionId,
-          status: form.status,
-          leaveDate: form.leaveDate || null,
+  // 검색 조건이 바뀔 때마다 서버에서 다시 조회
+  useEffect(() => {
+    let ignore = false; // 늦게 도착한 이전 응답이 화면을 덮어쓰지 않도록
+    const run = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const data = await searchEmployees({
+          keyword: keyword || undefined,
+          deptId: deptId || undefined,
+          positionId: positionId || undefined,
+          status: status === "ALL" ? undefined : status,
+          page,
+          size: PAGE_SIZE,
         });
-      } else {
-        await createEmployee({
-          empNo: form.empNo,
-          empName: form.empName,
-          email: form.email,
-          phone: form.phone,
-          deptId: Number(form.deptId),
-          positionId: Number(form.positionId),
-          hireDate: form.hireDate,
-        } as EmployeeCreateRequest);
+        if (!ignore) setResult(data);
+      } catch (err) {
+        if (!ignore) setError(getErrorMessage(err, "직원 목록을 불러오지 못했습니다."));
+      } finally {
+        if (!ignore) setLoading(false);
       }
-      setShowModal(false);
-      fetchAll();
-    } catch (err: any) {
-      alert(err.response?.data?.message || "저장에 실패했습니다.");
-    }
+    };
+    run();
+    return () => {
+      ignore = true;
+    };
+  }, [keyword, status, deptId, positionId, page, reloadKey]);
+
+  // 하단 상태별 인원 수 (대시보드 통계 API 재사용)
+  useEffect(() => {
+    let ignore = false;
+    getDashboardStats()
+      .then((data) => {
+        if (!ignore) setStats(data);
+      })
+      .catch(() => {});
+    return () => {
+      ignore = true;
+    };
+  }, [reloadKey]);
+
+  const applyKeyword = () => {
+    setKeyword(keywordInput.trim());
+    setPage(0);
+  };
+
+  const resetFilters = () => {
+    setKeywordInput("");
+    setKeyword("");
+    setStatus("ALL");
+    setDeptId(0);
+    setPositionId(0);
+    setPage(0);
+  };
+
+  const handleSaved = () => {
+    setModal(null);
+    reload();
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm("정말 삭제하시겠습니까?")) return;
     try {
       await deleteEmployee(id);
-      fetchAll();
-    } catch (err: any) {
-      alert(err.response?.data?.message || "삭제에 실패했습니다.");
+      // 마지막 페이지의 마지막 항목을 지웠다면 한 페이지 앞으로 이동
+      if (result && result.content.length === 1 && page > 0) {
+        setPage(page - 1);
+      }
+      reload();
+    } catch (err) {
+      alert(getErrorMessage(err, "삭제에 실패했습니다."));
     }
   };
+
+  const employees = result?.content ?? [];
 
   return (
     <div>
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">직원관리</h1>
+        <h1 className="text-2xl font-bold text-gray-800">직원 관리</h1>
         <button
-          onClick={openCreate}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg
-        text-sm font-medium hover:bg-indigo-700 transition-colors"
+          onClick={() => setModal({ employee: null })}
+          className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
         >
           + 직원 등록
         </button>
       </div>
-      {/* 검색 / 필터 */}
-      <div className="flex gap-3 mb-4">
+
+      {/* 검색 */}
+      <div className="flex gap-2 mb-3">
         <input
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm
-        w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder="이름, 사번, 부서 검색"
-          value={searchKeyword}
-          onChange={(e) => setSearchKeyword(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="이름 또는 사번 검색"
+          value={keywordInput}
+          onChange={(e) => setKeywordInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && applyKeyword()}
         />
-        {["ALL", "ACTIVE", "LEAVE", "RESIGNED"].map((s) => (
-          <button
-            key={s}
-            onClick={() => setFilterStatus(s)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
-            ${filterStatus === s ? "bg-indigo-600 text-white" : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"}`}
-          >
-            {s === "ALL" ? "전체" : STAUS_LABEL[s]?.label}
-          </button>
-        ))}
+        <button
+          onClick={applyKeyword}
+          className="px-4 py-2 text-sm text-white bg-gray-700 rounded-lg hover:bg-gray-800 transition-colors"
+        >
+          검색
+        </button>
+        <button
+          onClick={resetFilters}
+          className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          초기화
+        </button>
       </div>
 
-      {/* 에러 */}
+      {/* 필터 */}
+      <div className="flex flex-wrap gap-3 mb-4">
+        {STATUS_FILTERS.map((s) => (
+          <button
+            key={s}
+            onClick={() => {
+              setStatus(s);
+              setPage(0);
+            }}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              status === s
+                ? "bg-indigo-600 text-white"
+                : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            {s === "ALL" ? "전체" : STATUS_LABEL[s].label}
+          </button>
+        ))}
+
+        <select
+          className={selectClass}
+          value={deptId}
+          onChange={(e) => {
+            setDeptId(Number(e.target.value));
+            setPage(0);
+          }}
+        >
+          <option value={0}>전체 부서</option>
+          {departments
+            .filter((d) => d.useYn === "Y")
+            .map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.parentName ? `${d.parentName} > ` : ""}
+                {d.deptName}
+              </option>
+            ))}
+        </select>
+
+        <select
+          className={selectClass}
+          value={positionId}
+          onChange={(e) => {
+            setPositionId(Number(e.target.value));
+            setPage(0);
+          }}
+        >
+          <option value={0}>전체 직급</option>
+          {positions.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.posName}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {error && (
         <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-200">
           {error}
@@ -184,24 +238,16 @@ export default function EmployeePage() {
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              {[
-                "사번",
-                "이름",
-                "부서",
-                "직급",
-                "이메일",
-                "입사일",
-                "상태",
-                "관리",
-              ].map((h) => (
-                <th
-                  key={h}
-                  className="px-4 py-3 text-left text-xs font-semibold
-                text-gray-500 uppercase tracking-wider"
-                >
-                  {h}
-                </th>
-              ))}
+              {["사번", "이름", "부서", "직급", "이메일", "입사일", "상태", "관리"].map(
+                (h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >
+                    {h}
+                  </th>
+                ),
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -211,52 +257,59 @@ export default function EmployeePage() {
                   불러오는 중...
                 </td>
               </tr>
-            ) : filtered.length === 0 ? (
+            ) : employees.length === 0 ? (
               <tr>
                 <td colSpan={8} className="text-center py-10 text-gray-400">
-                  직원이 없습니다.
+                  조건에 맞는 직원이 없습니다.
                 </td>
               </tr>
             ) : (
-              filtered.map((emp) => (
+              employees.map((emp) => (
                 <tr
                   key={emp.id}
-                  className={`transition-colors ${emp.status === "RESIGNED" ? "opacity-50 bg-gray-50" : "hover:bg-gray-50"}`}
+                  className={`transition-colors ${
+                    emp.status === "RESIGNED"
+                      ? "opacity-50 bg-gray-50"
+                      : "hover:bg-gray-50"
+                  }`}
                 >
                   <td className="px-4 py-3 font-mono text-indigo-600 text-xs">
                     {emp.empNo}
                   </td>
                   <td
-                    className={`px-4 py-3 font-medium ${emp.status === "RESIGNED" ? "text-gray-400 line-through" : "text-gray-800"}`}
+                    className={`px-4 py-3 font-medium ${
+                      emp.status === "RESIGNED"
+                        ? "text-gray-400 line-through"
+                        : "text-gray-800"
+                    }`}
                   >
                     {emp.empName}
                   </td>
                   <td className="px-4 py-3 text-gray-500">{emp.deptName}</td>
-                  <td className="px-4 py-3 text-gray-500">
-                    {emp.positionName}
-                  </td>
+                  <td className="px-4 py-3 text-gray-500">{emp.positionName}</td>
                   <td className="px-4 py-3 text-gray-500">{emp.email}</td>
                   <td className="px-4 py-3 text-gray-500">
                     {emp.hireDate?.slice(0, 10)}
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium
-                      ${STAUS_LABEL[emp.status]?.style}`}
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        STATUS_LABEL[emp.status]?.style
+                      }`}
                     >
-                      {STAUS_LABEL[emp.status]?.label}
+                      {STATUS_LABEL[emp.status]?.label ?? emp.status}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
                       <button
-                        className="text-xs text-indigo-600 hover: text-indigo-800 font-medium"
-                        onClick={() => openEdit(emp)}
+                        className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                        onClick={() => setModal({ employee: emp })}
                       >
                         수정
                       </button>
                       <button
-                        className="text-xs text-indigo-500 hover: text-indigo-700 font-medium"
+                        className="text-xs text-red-500 hover:text-red-700 font-medium"
                         onClick={() => handleDelete(emp.id)}
                       >
                         삭제
@@ -269,241 +322,52 @@ export default function EmployeePage() {
           </tbody>
         </table>
 
-        {/* 하단 통계 */}
-        <div
-          className="px-4 py-3 border-t border-gray-100 bg-gray-50 
-        flex gap-4 text-xs text-gray-500"
-        >
-          <span>
-            전체 <b className="text-gray-700">{employees.length}</b>명
-          </span>
-          <span>
-            재직중{" "}
-            <b className="text-green-600">
-              {employees.filter((e) => e.status === "ACTIVE").length}
-            </b>
-            명
-          </span>
-          <span>
-            휴직{" "}
-            <b className="text-yellow-600">
-              {employees.filter((e) => e.status === "LEAVE").length}
-            </b>
-            명
-          </span>
-          <span>
-            퇴직{" "}
-            <b className="text-gray-400">
-              {employees.filter((e) => e.status === "RESIGNED").length}
-            </b>
-            명
-          </span>
-        </div>
+        {/* 하단 통계 (전체 직원 기준) */}
+        {stats && (
+          <div className="px-4 py-3 border-t border-gray-100 bg-gray-50 flex gap-4 text-xs text-gray-500">
+            <span>
+              전체 <b className="text-gray-700">{stats.totalEmployees}</b>명
+            </span>
+            <span>
+              재직중 <b className="text-green-600">{stats.activeEmployees}</b>명
+            </span>
+            <span>
+              휴직 <b className="text-yellow-600">{stats.leaveEmployees}</b>명
+            </span>
+            <span>
+              퇴직 <b className="text-gray-400">{stats.resignedEmployees}</b>명
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* 등록 수정 모달 */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div
-            className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 
-        max-h-[90vh] overflow-y-auto"
-          >
-            <h2 className="text-lg font-bold text-gray-800 mb-4">
-              {editTarget ? "직원 수정" : "직원 등록"}
-            </h2>
-            <div className="space-y-3">
-              {/* 사번 - 등록 시에만 */}
-              {!editTarget && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    사번 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2
-                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="예: EMP2024001"
-                    value={form.empNo}
-                    onChange={(e) =>
-                      setForm({ ...form, empNo: e.target.value })
-                    }
-                  />
-                </div>
-              )}
-
-              {/* 이름 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  이름 <span className="text-red-500">*</span>
-                </label>
-                <input
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2
-                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="직원명 입력"
-                  value={form.empName}
-                  onChange={(e) =>
-                    setForm({ ...form, empName: e.target.value })
-                  }
-                />
-              </div>
-
-              {/* 이메일 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  이메일 <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2
-                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="이메일 입력"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                />
-              </div>
-
-              {/* 연락처 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  연락처
-                </label>
-                <input
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2
-                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="010-0000-0000"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                />
-              </div>
-
-              {/* 부서 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  부서 <span className="text-red-500">*</span>
-                </label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2
-                text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  value={form.deptId}
-                  onChange={(e) =>
-                    setForm({ ...form, deptId: Number(e.target.value) })
-                  }
-                >
-                  <option value={0}>부서 선택</option>
-                  {departments
-                    .filter((d) => d.useYn === "Y")
-                    .map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.parentName ? `${d.parentName} > ` : ""}
-                        {d.deptName}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              {/* 직급 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  직급 <span className="text-red-500">*</span>
-                </label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2
-                text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  value={form.positionId}
-                  onChange={(e) =>
-                    setForm({ ...form, positionId: Number(e.target.value) })
-                  }
-                >
-                  <option value={0}>직급 선택</option>
-                  {positions.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.posName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* 입사일 - 등록 시에만 */}
-              {!editTarget && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    입사일 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full border border-gray-300 rounded-lg px3 py-2
-                  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    value={form.hireDate}
-                    onChange={(e) =>
-                      setForm({ ...form, hireDate: e.target.value })
-                    }
-                  />
-                </div>
-              )}
-
-              {/* 상태 / 퇴직일 - 수정시에만 */}
-              {editTarget && (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      상태 <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      className="w-full border  border-gray-300 rounded-lg px-3 py-2
-                       text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 "
-                      value={form.status}
-                      onChange={(e) =>
-                        setForm({ ...form, status: e.target.value })
-                      }
-                    >
-                      <option value="ACTIVE">재직중</option>
-                      <option value="LEAVE">휴직</option>
-                      <option value="RESIGNED">퇴직</option>
-                    </select>
-                  </div>
-
-                  {form.status === "RESIGNED" && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        퇴직일
-                      </label>
-                      <input
-                        type="date"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2
-                       text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        value={form.leaveDate}
-                        onChange={(e) =>
-                          setForm({ ...form, leaveDate: e.target.value })
-                        }
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-
-            {/* 에러 */}
-            {error && <p className="flex justify-end gap-2 mt-6">{error}</p>}
-
-            {/* 버튼 */}
-            <div>
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setError("");
-                }}
-                className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                취소
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="px-4 py-2 text-sm text-white
-               bg-indigo-600 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                {editTarget ? "수정" : "등록"}
-              </button>
-            </div>
-          </div>
+      {/* 검색 결과 / 페이지 이동 */}
+      {result && (
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm text-gray-500">
+            검색 결과 <b className="text-gray-700">{result.totalElement}</b>명
+            {result.totalPages > 0 && (
+              <span className="ml-2 text-gray-400">
+                {result.page + 1} / {result.totalPages} 페이지
+              </span>
+            )}
+          </p>
+          <Pagination
+            page={result.page}
+            totalPages={result.totalPages}
+            onChange={setPage}
+          />
         </div>
+      )}
+
+      {modal && (
+        <EmployeeFormModal
+          employee={modal.employee}
+          departments={departments}
+          positions={positions}
+          onClose={() => setModal(null)}
+          onSaved={handleSaved}
+        />
       )}
     </div>
   );

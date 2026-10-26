@@ -1,7 +1,8 @@
-import type { ApiResponse } from "../types/common";
+import type { ApiResponse, PageResponse } from "../types/common";
 import type {
   Employee,
   EmployeeCreateRequest,
+  EmployeeSearchParams,
   EmployeeUpdateRequest,
   Position,
 } from "../types/employee";
@@ -46,3 +47,12 @@ export const getPositions = async (): Promise<Position[]> => {
     await axiosInstance.get<ApiResponse<Position[]>>("/api/positions");
   return res.data.data;
 };
+
+export const searchEmployees = async(
+  params: EmployeeSearchParams,
+): Promise<PageResponse<Employee>> => {
+  const res = await axiosInstance.get<ApiResponse<PageResponse<Employee>>>(
+    "/api/employees/search", {params}
+  );
+  return res.data.data;
+}
